@@ -61,8 +61,8 @@ namespace OMS.Networking
 			GameObject playerGO = PhotonNetwork.Instantiate("NetworkPlayer", currentScene.playerPositions[actorNumber].position,
 				Quaternion.identity, 0);
 
-			RigidbodyFirstPersonController playerController = playerGO.GetComponent<RigidbodyFirstPersonController>();
-			playerController.Init (colorPresets[actorNumber], this);
+//			RigidbodyFirstPersonController playerController = playerGO.GetComponent<RigidbodyFirstPersonController>();
+//			playerController.Init (colorPresets[actorNumber], this);
 
 		}
 
