@@ -28,9 +28,11 @@ public class LobbyView : MonoBehaviour
 			return;
 		}
 
-		playerNameInput.text = PlayerPrefs.GetString("PlayerName", "Player " + Random.Range(1000, 10000));
+        playerNameInput.text =  "Player " + Random.Range(1000, 10000);
 
-		createButton.interactable = false;
+        //playerNameInput.text = PlayerPrefs.GetString("PlayerName", "Player " + Random.Range(1000, 10000));
+
+        createButton.interactable = false;
 		NetworkLobbyHelper.onConnected += OnConnected;
 		NetworkLobbyHelper.onJoinedRoom += OnJoinedRoom;
 		NetworkLobbyHelper.onPlayersListUpdate += OnPlayersListUpdate;

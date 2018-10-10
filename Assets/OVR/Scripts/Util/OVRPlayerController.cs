@@ -152,7 +152,19 @@ public class OVRPlayerController : MonoBehaviour
     private float buttonRotation = 0f;
     private bool ReadyToSnapTurn; // Set to true when a snap turn has occurred, code requires one frame of centered thumbstick to enable another snap turn.
 
-    public virtual Transform transform { get; set; }
+    protected Transform _transform;
+    public virtual Transform transform
+    {
+        get
+        {
+            return _transform;
+        }
+        set
+        {
+            _transform = value;
+        }
+    }
+  
 
     void Start()
     {
@@ -175,7 +187,7 @@ public class OVRPlayerController : MonoBehaviour
         // We use OVRCameraRig to set rotations to cameras,
         // and to be influenced by rotation
         OVRCameraRig[] CameraRigs = gameObject.GetComponentsInChildren<OVRCameraRig>();
-
+        
         if(CameraRigs.Length == 0)
             Debug.LogWarning("OVRPlayerController: No OVRCameraRig attached.");
         else if (CameraRigs.Length > 1)

@@ -6,8 +6,7 @@ public class NetworkPlayer : OVRPlayerController
 {
     NetworkPlayerController networkPlayerController;
     PhotonView photonView;
-
-    Transform _transform;
+    
 
     public override Transform transform
     {
@@ -41,6 +40,36 @@ public class NetworkPlayer : OVRPlayerController
         _transform = networkPlayerController.transform;
 
         CameraRig.verticalOffset = networkPlayerController.verticalOffset;
+    }
+
+    public void DisableCamera()
+    {
+        CameraRig.gameObject.SetActive(false);
+    }
+
+    public override void UpdateMovement()
+    {
+        if (photonView != null)
+        {
+            if (!photonView.isMine)
+            {
+                return;
+            }
+        }
+        base.UpdateMovement();
+    }
+
+    protected override void UpdateController()
+    {
+        if (photonView != null)
+        {
+            if (!photonView.isMine)
+            {
+                return;
+            }
+        }
+
+        base.UpdateController();
     }
 
 }

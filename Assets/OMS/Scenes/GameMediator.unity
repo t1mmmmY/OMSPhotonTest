@@ -367,6 +367,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2c7dd81b9cbe0cb40b33b0ed43891fb9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  networkPlayerControllerPrefab: {fileID: 114551577951830050, guid: b2e6a4bfc5ad3a24db05482504a21270,
+    type: 2}
   sceneManager: {fileID: 1416558281}
   colorPresets:
   - {r: 1, g: 0, b: 0, a: 1}

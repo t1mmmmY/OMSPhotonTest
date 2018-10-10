@@ -5,7 +5,7 @@ using System.IO;
 
 public class PhotonAvatarView : Photon.MonoBehaviour, IPunObservable
 {
-    private PhotonView photonView;
+    //private PhotonView photonView;
     private OvrAvatar ovrAvatar;
     private OvrAvatarRemoteDriver remoteDriver;
 
@@ -15,7 +15,7 @@ public class PhotonAvatarView : Photon.MonoBehaviour, IPunObservable
 
     public void Start()
     {
-        photonView = GetComponent<PhotonView>();
+        //photonView = GetComponent<PhotonView>();
 
         if (photonView.isMine)
         {
@@ -83,6 +83,10 @@ public class PhotonAvatarView : Photon.MonoBehaviour, IPunObservable
     {
         if (stream.isWriting)
         {
+            if (packetData == null)
+            {
+                return;
+            }
             if (packetData.Count == 0)
             {
                 return;

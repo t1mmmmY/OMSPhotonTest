@@ -11,3 +11,6 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/OMS/Scenes/GameMediator.unity
     guid: 0047dd246d86e594493eced08ff577d1
+  - enabled: 0
+    path: Assets/Oculus/Avatar/Samples/LocalAvatar/LocalAvatar 1.unity
+    guid: ca94d0d3183ffa84eb30ed32544a3078
