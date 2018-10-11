@@ -65,8 +65,11 @@ namespace OMS.Networking
 
 		public void StartGame(string sceneName)
 		{
-			PhotonNetwork.room.IsOpen = false;
-			PhotonNetwork.room.IsVisible = false;
+            if (PhotonNetwork.room.PlayerCount == PhotonNetwork.room.MaxPlayers)
+            {
+                PhotonNetwork.room.IsOpen = false;
+                PhotonNetwork.room.IsVisible = false;
+            }
 
 			PhotonNetwork.LoadLevel(sceneName);
 		}

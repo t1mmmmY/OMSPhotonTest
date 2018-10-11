@@ -10,41 +10,73 @@ public class NetworkPlayerController : Photon.MonoBehaviour, IPunObservable
     public CharacterController characterController;
     public float verticalOffset = 1.7f;
 
-    NetworkGameManager gameManager;
     NetworkPlayer player;
-    //private PhotonVoiceRecorder voiceRecorder;
+    GameObject localAvatar;
 
-    //void Awake()
-    //{
-    //    voiceRecorder = GetComponent<PhotonVoiceRecorder>();
+    public int avatarViewId;
 
-    //    player = GameObject.Instantiate<NetworkPlayer>(networkPlayerPrefab, this.transform);
-
-    //    if (player != null)
-    //    {
-    //        player.Init(this);
-    //    }
-    //}
-
-    public void Init(NetworkGameManager gameManager, bool isLocalPlayer)
+    public void Init()
     {
-        this.gameManager = gameManager;
+        CreatePlayer();
 
-        //voiceRecorder = GetComponent<PhotonVoiceRecorder>();
+        if (photonView.isMine)
+        {
+            CreateLocalAvatar();
+        }
+        else
+        {
+            player.DisableCamera();
+        }
 
+    }
+
+    public void RestoreRemotePlayer()
+    {
+        if (player == null && !photonView.isMine)
+        {
+            CreatePlayer();
+            player.DisableCamera();
+        }
+
+        if (localAvatar == null && !photonView.isMine)
+        {
+            CreateAvatar("RemoteAvatar", avatarViewId);
+        }
+    }
+
+    void CreatePlayer()
+    {
         player = GameObject.Instantiate<NetworkPlayer>(networkPlayerPrefab, this.transform);
-
         if (player != null)
         {
             player.Init(this);
         }
+    }
 
-        if (!isLocalPlayer)
+    void CreateLocalAvatar()
+    {
+        avatarViewId = PhotonNetwork.AllocateViewID();
+        CreateAvatar("LocalAvatar", avatarViewId);
+
+        photonView.RPC("OnCreateAvatarRPC", PhotonTargets.Others, avatarViewId);
+    }
+
+    [PunRPC]
+    void OnCreateAvatarRPC(int viewId)
+    {
+        CreateAvatar("RemoteAvatar", viewId);
+    }
+
+    void CreateAvatar(string avatarName, int viewId)
+    {
+        localAvatar = Instantiate(Resources.Load(avatarName), this.transform) as GameObject;
+
+        PhotonView pView = localAvatar.GetComponent<PhotonView>();
+        if (pView != null)
         {
-            player.DisableCamera();
+            pView.viewID = viewId;
         }
     }
-    
 
     void Update()
     {
@@ -52,24 +84,29 @@ public class NetworkPlayerController : Photon.MonoBehaviour, IPunObservable
         {
             if (!photonView.isMine)
             {
+                if (player == null)
+                {
+                    CreatePlayer();
+                    player.DisableCamera();
+                }
                 return;
             }
         }
 
-        //if (voiceRecorder != null)
-        //{
-        //    if (Input.GetKeyDown(KeyCode.Space))
-        //    {
-        //        voiceRecorder.Transmit = !voiceRecorder.Transmit;
-        //        gameManager.Mute(!voiceRecorder.Transmit);
-        //    }
-        //}
     }
 
     #region IPunObservable implementation
 
     public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
     {
+        if (stream.isWriting)
+        {
+            stream.SendNext(avatarViewId);
+        }
+        else
+        {
+            avatarViewId = (int)stream.ReceiveNext();
+        }
     }
 
     #endregion

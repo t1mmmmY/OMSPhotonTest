@@ -11,7 +11,7 @@ using Voice = ExitGames.Client.Photon.Voice;
 [DisallowMultipleComponent]
 [AddComponentMenu("Photon Voice/Photon Voice Recorder")]
 //[HelpURL("https://doc.photonengine.com/en-us/voice/current/getting-started/voice-for-pun#the__audio_source__prefab")]
-public class PhotonVoiceRecorder : Photon.MonoBehaviour
+public class PhotonVoiceRecorder : Photon.MonoBehaviour, IPunObservable
 {
     private Voice.LocalVoice voice = Voice.LocalVoiceAudio.Dummy;
 
@@ -420,4 +420,10 @@ public byte AudioGroup
         Microphone.GetDeviceCaps(MicrophoneDevice, out minFreq, out maxFreq);
         return string.Format("Mic '{0}': {1}..{2} Hz", MicrophoneDevice, minFreq, maxFreq);
     }    
+
+    #region IPunObservable implementation
+    public void OnPhotonSerializeView (PhotonStream stream, PhotonMessageInfo info)
+    {
+    }
+    #endregion
 }

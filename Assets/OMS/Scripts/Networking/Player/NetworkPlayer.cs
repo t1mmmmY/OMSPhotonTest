@@ -40,6 +40,7 @@ public class NetworkPlayer : OVRPlayerController
         _transform = networkPlayerController.transform;
 
         CameraRig.verticalOffset = networkPlayerController.verticalOffset;
+
     }
 
     public void DisableCamera()

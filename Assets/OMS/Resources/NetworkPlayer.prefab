@@ -146,6 +146,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: be5ffc1cc1c0ffb4cb4f600cbc0ad416, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  bulletPrefab: {fileID: 1064941082263554, guid: 4dadef7968e348e418ceec9fbbbec045,
+    type: 2}
   networkPlayerPrefab: {fileID: 114828532987056890, guid: fac190db0cca3984d9dc1304038bf57f,
     type: 2}
   characterController: {fileID: 143395000945098692}

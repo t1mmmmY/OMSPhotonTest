@@ -5,7 +5,6 @@ using System.IO;
 
 public class PhotonAvatarView : Photon.MonoBehaviour, IPunObservable
 {
-    //private PhotonView photonView;
     private OvrAvatar ovrAvatar;
     private OvrAvatarRemoteDriver remoteDriver;
 
@@ -15,8 +14,6 @@ public class PhotonAvatarView : Photon.MonoBehaviour, IPunObservable
 
     public void Start()
     {
-        //photonView = GetComponent<PhotonView>();
-
         if (photonView.isMine)
         {
             ovrAvatar = GetComponent<OvrAvatar>();
@@ -74,6 +71,10 @@ public class PhotonAvatarView : Photon.MonoBehaviour, IPunObservable
             byte[] sdkData = reader.ReadBytes(size);
 
             System.IntPtr packet = Oculus.Avatar.CAPI.ovrAvatarPacket_Read((System.UInt32)data.Length, sdkData);
+            if (remoteDriver == null)
+            {
+                remoteDriver = GetComponent<OvrAvatarRemoteDriver>();
+            }
             remoteDriver.QueuePacket(remoteSequence, new OvrAvatarPacket { ovrNativePacket = packet });
         }
     }

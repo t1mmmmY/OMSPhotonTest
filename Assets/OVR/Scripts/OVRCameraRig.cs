@@ -161,15 +161,15 @@ public class OVRCameraRig : MonoBehaviour
         trackerAnchor.localPosition = tracker.position + transform.up * verticalOffset;
         #if UNITY_2017_2_OR_NEWER
         centerEyeAnchor.localPosition = UnityEngine.XR.InputTracking.GetLocalPosition(UnityEngine.XR.XRNode.CenterEye) + transform.up * verticalOffset;
-        leftEyeAnchor.localPosition = monoscopic ? centerEyeAnchor.localPosition : UnityEngine.XR.InputTracking.GetLocalPosition(UnityEngine.XR.XRNode.LeftEye);
-        rightEyeAnchor.localPosition = monoscopic ? centerEyeAnchor.localPosition : UnityEngine.XR.InputTracking.GetLocalPosition(UnityEngine.XR.XRNode.RightEye);
+        leftEyeAnchor.localPosition = monoscopic ? centerEyeAnchor.localPosition : UnityEngine.XR.InputTracking.GetLocalPosition(UnityEngine.XR.XRNode.LeftEye) + transform.up * verticalOffset;
+        rightEyeAnchor.localPosition = monoscopic ? centerEyeAnchor.localPosition : UnityEngine.XR.InputTracking.GetLocalPosition(UnityEngine.XR.XRNode.RightEye) + transform.up * verticalOffset;
         #else
         centerEyeAnchor.localPosition = VR.InputTracking.GetLocalPosition(VR.VRNode.CenterEye);
         leftEyeAnchor.localPosition = monoscopic ? centerEyeAnchor.localPosition : VR.InputTracking.GetLocalPosition(VR.VRNode.LeftEye);
         rightEyeAnchor.localPosition = monoscopic ? centerEyeAnchor.localPosition : VR.InputTracking.GetLocalPosition(VR.VRNode.RightEye);
         #endif
-        leftHandAnchor.localPosition = OVRInput.GetLocalControllerPosition(OVRInput.Controller.LTouch);
-        rightHandAnchor.localPosition = OVRInput.GetLocalControllerPosition(OVRInput.Controller.RTouch);
+        leftHandAnchor.localPosition = OVRInput.GetLocalControllerPosition(OVRInput.Controller.LTouch) + transform.up * verticalOffset;
+        rightHandAnchor.localPosition = OVRInput.GetLocalControllerPosition(OVRInput.Controller.RTouch) + transform.up * verticalOffset;
 
         if (UpdatedAnchors != null)
         {

@@ -1,15 +1,25 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-//using Photon.Realtime;
-//using Photon.Pun.UtilityScripts;
-//using Photon.Pun;
 
 namespace OMS.Networking
 {
 
 	public class NetworkGameManager : Photon.MonoBehaviour, IPunObservable
 	{
+        private static NetworkGameManager _instance;
+        public static NetworkGameManager Instance
+        {
+            get
+            {
+                return _instance;
+            }
+            private set
+            {
+                _instance = value;
+            }
+        }
+
         [SerializeField] NetworkPlayerController networkPlayerControllerPrefab;
         [SerializeField] OMSSceneManager sceneManager;
 		[SerializeField] Color[] colorPresets;
@@ -18,19 +28,48 @@ namespace OMS.Networking
 		ScenarioScene currentScene;
         NetworkPlayerController localPlayerController = null;
 
-        public readonly byte InstantiateVrAvatarEventCode = 123;
-		
 		void Awake()
 		{
+            Instance = this;
 			sceneManager.onCreateScene += OnCreateScene;
-            PhotonNetwork.OnEventCall += OnEvent;
 		}
 
 		void OnDestroy()
 		{
 			sceneManager.onCreateScene -= OnCreateScene;
-            PhotonNetwork.OnEventCall -= OnEvent;
 		}
+
+        void Start()
+        {
+            StartCoroutine("WaitToCreatePlayerCoroutine");
+        }
+
+        IEnumerator WaitToCreatePlayerCoroutine()
+        {
+            do
+            {
+                yield return new WaitForSeconds(0.5f);
+
+                currentScene = GameObject.FindObjectOfType<ScenarioScene>();
+                if (currentScene != null && localPlayerController == null)
+                {
+                    //Scene was already created and OcCreateSceneRPC was missed
+                    CreatePlayer();
+                    RestoreRemotePlayers();
+                    yield break;
+                }
+
+            } while (localPlayerController == null);
+        }
+
+        void FixedUpdate()
+        {
+            if (currentScene != null && localPlayerController == null)
+            {
+                //Scene was already created and OcCreateSceneRPC was missed
+                CreatePlayer();
+            }
+        }
 
 		public void QuitGame()
 		{
@@ -42,102 +81,54 @@ namespace OMS.Networking
 			soundOffImage.SetActive(isMuted);
 		}
 
+
 		void OnCreateScene(ScenarioScene scene)
 		{
 			if (PhotonNetwork.isMasterClient) 
 			{
 				photonView.RPC("OnCreateSceneRPC", PhotonTargets.Others);
-			}
 
-			currentScene = scene;
-			//Now we can create players
-			CreatePlayer();
+                currentScene = scene;
+                //Now we can create players
+                CreatePlayer();
+			}
 		}
 
 		[PunRPC]
 		void OnCreateSceneRPC()
 		{
-			currentScene = GameObject.FindObjectOfType<ScenarioScene>();
+            if (currentScene == null)
+            {
+                currentScene = GameObject.FindObjectOfType<ScenarioScene>();
+            }
 			CreatePlayer();
 		}
 
         void CreatePlayer()
         {
-            int viewId = PhotonNetwork.AllocateViewID();
+            int actorNumber = PhotonNetwork.player.ID;
 
-            //if (photonView.isMine)
-            //{
-            //    int actorNumber = PhotonNetwork.player.ID;
-            //    Debug.Log("CreatePlayer " + actorNumber.ToString());
-            //    GameObject playerGO = PhotonNetwork.Instantiate("NetworkPlayer", currentScene.playerPositions[actorNumber].position,
-            //        Quaternion.identity, 0);
+            GameObject networkPlayerGO = PhotonNetwork.Instantiate("NetworkPlayer", 
+                currentScene.playerPositions[actorNumber].position, currentScene.playerPositions[actorNumber].rotation, 0);
+            localPlayerController = networkPlayerGO.GetComponent<NetworkPlayerController>();
+            localPlayerController.Init();
 
-            //    localPlayerController = playerGO.GetComponent<NetworkPlayerController>();
-            //    localPlayerController.Init(this, photonView.isMine);
-            //}
-
-            PhotonNetwork.RaiseEvent(InstantiateVrAvatarEventCode, viewId, true, new RaiseEventOptions() { CachingOption = EventCaching.AddToRoomCache, Receivers = ReceiverGroup.All });
             GameObject voiceRecorderGO = PhotonNetwork.Instantiate("VoiceRecorder", Vector3.zero, Quaternion.identity, 0);
             voiceRecorderGO.GetComponent<VoiceController>().Init(this);
+
+            voiceRecorderGO.transform.parent = localPlayerController.transform;
+            voiceRecorderGO.transform.localPosition = Vector3.zero;
         }
 
-        [PunRPC]
-        void AssignViewID(int id)
+        public void RestoreRemotePlayers()
         {
-            localPlayerController.photonView.viewID = id;
-        }
-
-        private void OnEvent(byte eventcode, object content, int senderid)
-        {
-            if (eventcode == InstantiateVrAvatarEventCode)
+            NetworkPlayerController[] allPlayerControllers = FindObjectsOfType<NetworkPlayerController>();
+            foreach (NetworkPlayerController playerController in allPlayerControllers)
             {
-                bool isLocalPlayer = PhotonNetwork.player.ID == senderid;
-
-                int actorNumber = PhotonNetwork.player.ID;
-
-                Debug.Log("CreatePlayer " + actorNumber.ToString());
-                //if (isLocalPlayer)
-                //{
-                //GameObject playerGO = PhotonNetwork.Instantiate("NetworkPlayer", currentScene.playerPositions[actorNumber].position,
-                //    Quaternion.identity, 0);
-
-                //NetworkPlayerController networkPlayerController = playerGO.GetComponent<NetworkPlayerController>();
-                //}
-
-                localPlayerController = GameObject.Instantiate<NetworkPlayerController>(networkPlayerControllerPrefab,
-                    currentScene.playerPositions[actorNumber].position, Quaternion.identity);
-
-                localPlayerController.Init(this, isLocalPlayer);
-                if (isLocalPlayer)
-                {
-                    int playerID = PhotonNetwork.AllocateViewID();
-                    photonView.RPC("AssignViewID", PhotonTargets.Others, playerID);
-                    localPlayerController.photonView.viewID = playerID;
-                }
-
-                GameObject go = null;
-
-                if (isLocalPlayer)
-                {
-                    go = Instantiate(Resources.Load("LocalAvatar"), localPlayerController.transform) as GameObject;
-                }
-                else
-                {
-                    //Destroy(networkPlayerController.gameObject);
-                    go = Instantiate(Resources.Load("RemoteAvatar"), localPlayerController.transform) as GameObject;
-                }
-
-                if (go != null)
-                {
-                    PhotonView pView = go.GetComponent<PhotonView>();
-
-                    if (pView != null)
-                    {
-                        pView.viewID = (int)content;
-                    }
-                }
-            }
+                playerController.RestoreRemotePlayer();
+            }    
         }
+
 
 		#region IPunObservable implementation
 		public void OnPhotonSerializeView (PhotonStream stream, PhotonMessageInfo info)

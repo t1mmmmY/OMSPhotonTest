@@ -654,6 +654,7 @@ public class OvrAvatar : MonoBehaviour
 
     public void ShowLeftController(bool show)
     {
+        Debug.Log("sdkAvatar = " + sdkAvatar.ToString());
         if (sdkAvatar != IntPtr.Zero)
         {
             CAPI.ovrAvatar_SetLeftControllerVisibility(sdkAvatar, show);

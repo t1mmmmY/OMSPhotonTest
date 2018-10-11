@@ -38,4 +38,6 @@ MonoBehaviour:
   - RequestForPickupItems
   - RequestForPickupTimes
   - AssignViewID
+  - FireRPC
+  - OnCreateAvatarRPC
   DisableAutoOpenWizard: 1

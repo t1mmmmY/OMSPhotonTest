@@ -1,7 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-//using Photon.Pun;
 
 public class OMSSceneManager : MonoBehaviour
 {
@@ -43,7 +42,6 @@ public class OMSSceneManager : MonoBehaviour
 				GameObject scenarioGO = PhotonNetwork.InstantiateSceneObject(scenarioToCreate.scenarioScene.name, 
 					Vector3.zero, Quaternion.identity, 0, null);
 				ScenarioScene scene = scenarioGO.GetComponent<ScenarioScene>();
-//				ScenarioScene scene = GameObject.Instantiate<ScenarioScene> (scenarioToCreate.scenarioScene);
 				currentScenario = new ScenarioSceneInfo(scenarioToCreate.name, scene);
 
 
