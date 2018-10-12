@@ -40,4 +40,6 @@ MonoBehaviour:
   - AssignViewID
   - FireRPC
   - OnCreateAvatarRPC
+  - DoActionRPC
+  - AskForActionRPC
   DisableAutoOpenWizard: 1
