@@ -2,6 +2,9 @@
 using System.Collections.Generic;
 using UnityEngine;
 using System.IO;
+using Oculus.Avatar;
+using Oculus.Platform;
+using Oculus.Platform.Models;
 
 public class PhotonAvatarView : Photon.MonoBehaviour, IPunObservable
 {
@@ -26,6 +29,28 @@ public class PhotonAvatarView : Photon.MonoBehaviour, IPunObservable
         {
             remoteDriver = GetComponent<OvrAvatarRemoteDriver>();
         }
+
+        Oculus.Platform.Core.Initialize();
+        Oculus.Platform.Users.GetLoggedInUser().OnComplete(GetLoggedInUserCallback);
+        Oculus.Platform.Request.RunCallbacks();  //avoids race condition with OvrAvatar.cs Start().
+    }
+
+    private void GetLoggedInUserCallback(Message<User> message) 
+    {
+        if (!message.IsError) 
+        {
+            ovrAvatar.oculusUserID = "10150022857770130";
+//            ovrAvatar.oculusUserID = message.Data.ID.ToString();
+        }
+//        if (!message.IsError) 
+//        {
+//            OvrAvatar[] avatars = FindObjectsOfType(typeof(OvrAvatar)) as OvrAvatar[];
+//            foreach (OvrAvatar avatar in avatars) 
+//            {
+//                ovrAvatar.oculusUserID = "10150022857770130";
+//                avatar.oculusUserID = message.Data.ID;
+//            }
+//        }
     }
 
     public void OnDisable()
@@ -34,6 +59,7 @@ public class PhotonAvatarView : Photon.MonoBehaviour, IPunObservable
         {
             ovrAvatar.RecordPackets = false;
             ovrAvatar.PacketRecorded -= OnLocalAvatarPacketRecorded;
+
         }
     }
 
