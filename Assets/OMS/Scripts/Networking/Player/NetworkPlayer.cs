@@ -8,21 +8,21 @@ public class NetworkPlayer : OVRPlayerController
     PhotonView photonView;
     
 
-    public override Transform transform
-    {
-        get
-        {
-            if (_transform == null) 
-            {
-                _transform = this.gameObject.transform;
-            }
-            return _transform;
-        }
-        set
-        {
-            _transform = value;
-        }
-    }
+//    public override Transform transform
+//    {
+//        get
+//        {
+//            if (_transform == null) 
+//            {
+//                _transform = this.gameObject.transform;
+//            }
+//            return _transform;
+//        }
+//        set
+//        {
+//            _transform = value;
+//        }
+//    }
 
     public void Init(NetworkPlayerController owner)
     {
@@ -37,9 +37,9 @@ public class NetworkPlayer : OVRPlayerController
 
         networkPlayerController = owner;
         Controller = networkPlayerController.characterController;
-        _transform = networkPlayerController.transform;
+//        _transform = networkPlayerController.transform;
 
-        CameraRig.verticalOffset = networkPlayerController.verticalOffset;
+//        CameraRig.verticalOffset = networkPlayerController.verticalOffset;
 
     }
 

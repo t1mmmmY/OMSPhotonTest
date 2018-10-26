@@ -5,9 +5,12 @@ EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Scenes:
-  - enabled: 1
+  - enabled: 0
     path: Assets/OMS/Scenes/Lobby.unity
     guid: 5f2a16c0555ef344b814fa2a6b9f2158
+  - enabled: 1
+    path: Assets/Transient/Denis/Multiplayer/Scenes/MultiplayerLaunch.unity
+    guid: 8621f5687ea4698419506f4b515a68d5
   - enabled: 1
     path: Assets/OMS/Scenes/GameMediator.unity
     guid: 0047dd246d86e594493eced08ff577d1

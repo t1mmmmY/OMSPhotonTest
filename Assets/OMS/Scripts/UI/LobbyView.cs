@@ -6,6 +6,8 @@ using OMS.Networking;
 
 public class LobbyView : MonoBehaviour 
 {
+    [SerializeField] bool autoConnect = true;
+
 	[SerializeField] GameObject loginPanel;
 	[SerializeField] GameObject selectionPanel;
 	[SerializeField] GameObject createRoomPanel;
@@ -36,6 +38,11 @@ public class LobbyView : MonoBehaviour
 		NetworkLobbyHelper.onConnected += OnConnected;
 		NetworkLobbyHelper.onJoinedRoom += OnJoinedRoom;
 		NetworkLobbyHelper.onPlayersListUpdate += OnPlayersListUpdate;
+
+        if (autoConnect)
+        {
+            Login();
+        }
 	}
 
 	void OnDestroy()

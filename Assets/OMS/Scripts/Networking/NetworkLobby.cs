@@ -151,6 +151,14 @@ namespace OMS.Networking
 
 		}
 
+		public override void OnPhotonPlayerPropertiesChanged (object[] playerAndUpdatedProps)
+		{
+			if (onPlayersListUpdate != null) 
+			{
+				onPlayersListUpdate(PhotonNetwork.playerList);
+			}
+		}
+
 		public override void OnPhotonJoinRoomFailed(object[] codeAndMsg)
 		{
 		}
@@ -161,10 +169,17 @@ namespace OMS.Networking
 			{
 				onLeftRoom();
 			}
-
 		}
 
 		public override void OnPhotonPlayerConnected(PhotonPlayer newPlayer)
+		{
+			if (onPlayersListUpdate != null) 
+			{
+				onPlayersListUpdate(PhotonNetwork.playerList);
+			}
+		}
+
+		public override void OnPhotonPlayerDisconnected(PhotonPlayer otherPlayer)
 		{
 			if (onPlayersListUpdate != null) 
 			{

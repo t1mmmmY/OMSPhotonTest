@@ -10,6 +10,8 @@ namespace OMS.Networking
 	[RequireComponent(typeof(NetworkLobby))]
 	public class NetworkLobbyHelper : MonoBehaviour 
 	{
+		private static int defaultTimer = 30;
+
 		private static NetworkLobby networkLobby;
 
 		public static System.Action onConnected;
@@ -68,6 +70,26 @@ namespace OMS.Networking
 			networkLobby.LeaveRoom();
 		}
 
+		public static int GetCurrentTimer()
+		{
+			if (PhotonNetwork.room.CustomProperties.ContainsKey("Timer")) 
+			{
+				return (int)PhotonNetwork.room.CustomProperties["Timer"];
+			} 
+			else 
+			{
+				//some default value
+				return defaultTimer;
+			}
+		}
+
+		public static void SetCurrentTimer(int time)
+		{
+			ExitGames.Client.Photon.Hashtable hash = new ExitGames.Client.Photon.Hashtable();
+			hash.Add("Timer", time);
+			PhotonNetwork.room.SetCustomProperties(hash);
+		}
+
 		public static OMSRoomInfo GetCurrentRoomInfo()
 		{
 			Room currentRoom = networkLobby.GetCurrentRoomInfo();
@@ -86,6 +108,12 @@ namespace OMS.Networking
 		void OnCreatedRoom()
 		{
 			Debug.Log("OnCreatedRoom");
+
+			if (PhotonNetwork.isMasterClient)
+			{
+				SetCurrentTimer(defaultTimer);
+			}
+
 			if (onCreatedRoom != null) 
 			{
 				onCreatedRoom();
@@ -95,6 +123,11 @@ namespace OMS.Networking
 		void OnJoinedRoom()
 		{
 			Debug.Log("OnJoinedRoom");
+
+            ExitGames.Client.Photon.Hashtable hash = new ExitGames.Client.Photon.Hashtable();
+            hash.Add("isReady", false);
+            PhotonNetwork.player.SetCustomProperties(hash);
+
 			if (onJoinedRoom != null) 
 			{
 				onJoinedRoom();
@@ -133,7 +166,12 @@ namespace OMS.Networking
 			List<PlayerInfo> listOfPlayers = new List<PlayerInfo>();
 			foreach (PhotonPlayer player in players) 
 			{
-				listOfPlayers.Add(new PlayerInfo(player.ID, player.NickName));
+                bool isReady = false;
+                if (player.CustomProperties.ContainsKey("isReady"))
+                {
+                    isReady = (bool)player.CustomProperties["isReady"];
+                }
+                listOfPlayers.Add(new PlayerInfo(player.ID, player.NickName, player.IsLocal, isReady));
 			}
 
 			Debug.Log("OnPlayersListUpdate " + players.Length.ToString());
